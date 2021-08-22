@@ -1,0 +1,94 @@
+{% extends "loggedInLayout.html" %}
+
+{% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+    integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+    crossorigin="anonymous"></script>
+
+<div class="container">
+    <div>
+        <h4>Messaging with {{receiver}}</h4>
+    </div>
+    <div class="row">
+        <div class="messages-box">
+            {% for message in textMessages %}
+            <div class="col s12 m5">
+                <div class="card-panel teal">
+                    <span class="white-text">{{message.sender}}: {{message.message}}
+                    </span>
+                </div>
+            </div><br>
+            {% endfor %}
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="Message" type="text" class="message-field">
+                <label for="Message">Message</label>
+            </div>
+        </div>
+    </div>
+
+    <p class="sender" style="opacity: 0">{{sender}}</p>
+    <p class="receiver" style="opacity: 0">{{receiver}}</p>
+</div>
+
+<script>
+    const socket = io();
+    const sender = document.querySelector(".sender").textContent
+    const receiver = document.querySelector(".receiver").textContent
+    const messageField = document.querySelector(".message-field")
+    const messagesContainer = document.querySelector(".messages-box")
+
+    const room = [sender, receiver];
+    room.sort()
+    let roomCode = room.toString()
+    console.log(roomCode)
+
+    socket.on("connect", () => {
+        console.log(sender, " has connected...")
+    })
+
+    messageField.addEventListener('keypress', (e) => {
+        if (e.which === 13) {
+            if (messageField.value.length !== 0) {
+                ''
+                socket.emit("chat", {
+                    message: messageField.value.trim(),
+                    sender: sender,
+                    receiver: receiver,
+                    roomCode: roomCode
+                })
+                outputMessage(messageField.value.trim(), sender)
+                messageField.value = '';
+                messageField.focus()
+            }
+            else {
+                console.log("type something")
+            }
+        }
+    })
+
+    function outputMessage(message, sender) {
+        const outerDiv = document.createElement("div")
+        const innerDiv = document.createElement('div')
+        const span = document.createElement('span')
+
+        const outerDivClasses = ['col', 's12', 'm5']
+        const innerDivClasses = ['card-panel', 'teal']
+        const spanClasses = ['white-text']
+
+        outerDiv.classList.add(...outerDivClasses)
+        innerDiv.classList.add(...innerDivClasses)
+
+        span.classList.add(...spanClasses)
+
+        span.textContent = `${sender}: ${message}`
+        innerDiv.append(span)
+        outerDiv.append(innerDiv)
+        outerDiv.append(document.createElement('br'))
+        messagesContainer.append(outerDiv)
+
+    }
+
+</script>
+{% endblock %}

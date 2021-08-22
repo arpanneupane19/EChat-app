@@ -1,0 +1,39 @@
+{% extends "loggedInLayout.html" %}
+
+{% block content %}
+<div class="container">
+    <div>
+        <h4>Inbox</h4>
+    </div>
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    <div class="row">
+        <form class="col s12" method='POST'>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="Search" name='email' type="email" class="validate">
+                    <label for="Search">Search</label>
+                    <span class="helper-text" data-error="Please enter in a valid email.">Enter a user's email that
+                        you'd
+                        like to privately chat with.</span>
+                </div>
+            </div>
+        </form>
+    </div>
+    <ul class="collection">
+        {% for user in inboxMessages %}
+        <li class="collection-item">
+            <div>{{user}}<a href="/message-user/{{user}}" class="secondary-content"><i
+                        class="material-icons">send</i></a></div>
+        </li>
+        {% endfor %}
+    </ul>
+
+
+
+
+</div>
+{% endblock %}
