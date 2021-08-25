@@ -45,6 +45,10 @@
     console.log(roomCode)
 
     socket.on("connect", () => {
+        socket.emit('connectUser', {
+            user: sender,
+            room: roomCode
+        })
         console.log(sender, " has connected...")
     })
 
@@ -58,7 +62,6 @@
                     receiver: receiver,
                     roomCode: roomCode
                 })
-                outputMessage(messageField.value.trim(), sender)
                 messageField.value = '';
                 messageField.focus()
             }
@@ -67,6 +70,7 @@
             }
         }
     })
+
 
     function outputMessage(message, sender) {
         const outerDiv = document.createElement("div")
@@ -89,6 +93,10 @@
         messagesContainer.append(outerDiv)
 
     }
+
+    socket.on("message", (data) => {
+        outputMessage(data.message, data.sender)
+    })
 
 </script>
 {% endblock %}
